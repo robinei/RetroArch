@@ -795,7 +795,7 @@ AUDIO RESAMPLER
 CAMERA
 ============================================================ */
 #include "../camera/camera_driver.c"
-#if defined(ANDROID)
+#if defined(ANDROID) && 0
 #include "../camera/drivers/android.c"
 #elif defined(EMSCRIPTEN)
 #include "../camera/drivers/rwebcam.c"
@@ -827,7 +827,7 @@ LEDS
 /*============================================================
 LOCATION
 ============================================================ */
-#if defined(ANDROID)
+#if defined(ANDROID) && 0
 #include "../location/drivers/android.c"
 #endif
 

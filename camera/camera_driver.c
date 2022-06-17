@@ -51,7 +51,7 @@ const camera_driver_t *camera_drivers[] = {
 #ifdef EMSCRIPTEN
    &camera_rwebcam,
 #endif
-#ifdef ANDROID
+#if 0
    &camera_android,
 #endif
    &camera_null,

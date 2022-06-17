@@ -256,6 +256,7 @@ void picoscale_upscale_rgb_snn_256_320x192_240(uint16_t *PICOSCALE_restrict di, 
 void picoscale_upscale_rgb_bl2_256_320x224_240(uint16_t *PICOSCALE_restrict di, uint16_t ds,
       const uint16_t *PICOSCALE_restrict si, uint16_t ss)
 {
+#if 0
    uint16_t y, j;
 
    for (y = 0; y < 224; y += 16)
@@ -284,6 +285,7 @@ void picoscale_upscale_rgb_bl2_256_320x224_240(uint16_t *PICOSCALE_restrict di, 
     * > Last two rows must be zeroed out */
    memset(di,      0, sizeof(uint16_t) * ds);
    memset(di + ds, 0, sizeof(uint16_t) * ds);
+#endif
 }
 
 void picoscale_upscale_rgb_bl4_256_320x224_240(uint16_t *PICOSCALE_restrict di, uint16_t ds,

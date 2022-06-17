@@ -27,12 +27,12 @@ apply plugin: 'com.android.application'
 android {
   compileSdkVersion 30
   buildToolsVersion "30.0.3"
-  ndkVersion "22.0.7026061"
+  ndkVersion "14.1.3816874"
 
   flavorDimensions "variant"
 
   defaultConfig {
-    minSdkVersion 16
+    minSdkVersion 9
     externalNativeBuild {
       ndkBuild {
         arguments "-j${Runtime.runtime.availableProcessors()}"

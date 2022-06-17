@@ -115,7 +115,7 @@ __attribute__((always_inline)) static inline int internal_bind_libgamemode_symbo
     void *handle, const char *name, void **out_func, size_t func_size, bool required)
 {
 	void *symbol_lookup = NULL;
-	char *dl_error = NULL;
+	const char *dl_error = NULL;
 
 	/* Safely look up the symbol */
 	symbol_lookup = dlsym(handle, name);

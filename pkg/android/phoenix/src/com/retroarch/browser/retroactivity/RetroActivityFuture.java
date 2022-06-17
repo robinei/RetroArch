@@ -12,7 +12,7 @@ import com.retroarch.browser.preferences.util.UserPreferences;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public final class RetroActivityFuture extends RetroActivityCamera {
+public final class RetroActivityFuture extends RetroActivityCommon {
 
   // If set to true then Retroarch will completely exit when it loses focus
   private boolean quitfocus = false;

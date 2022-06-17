@@ -1205,7 +1205,7 @@ const char *config_get_default_camera(void)
       case CAMERA_RWEBCAM:
          return "rwebcam";
       case CAMERA_ANDROID:
-         return "android";
+         return "null";
       case CAMERA_AVFOUNDATION:
          return "avfoundation";
       case CAMERA_NULL:
@@ -1289,7 +1289,7 @@ const char *config_get_default_location(void)
    switch (default_driver)
    {
       case LOCATION_ANDROID:
-         return "android";
+         return "null";
       case LOCATION_CORELOCATION:
          return "corelocation";
       case LOCATION_NULL:

@@ -121,7 +121,7 @@ bool init_location(
 location_driver_state_t *location_state_get_ptr(void);
 
 extern location_driver_t location_corelocation;
-extern location_driver_t location_android;
+//extern location_driver_t location_android;
 
 extern const location_driver_t *location_drivers[];
 

@@ -33,7 +33,7 @@ static location_driver_t location_null = {
 };
 
 const location_driver_t *location_drivers[] = {
-#ifdef ANDROID
+#if 0
    &location_android,
 #endif
    &location_null,

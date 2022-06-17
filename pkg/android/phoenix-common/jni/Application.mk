@@ -40,3 +40,18 @@ ifeq ($(USE_CLANG),1)
 endif
 
 APP_STL := c++_static
+
+
+APP_PLATFORM := android-9
+APP_ABI := armeabi-v7a
+APP_STL := gnustl_static
+APP_CFLAGS := \
+    -march=armv7-a \
+    -mfpu=neon \
+    -mfloat-abi=softfp \
+    -marm \
+    -fprefetch-loop-arrays \
+    -DHAVE_NEON=1
+APP_CPPFLAGS := $(APP_CFLAGS)
+NDK_TOOLCHAIN_VERSION := 4.9
+NDK_MODULE_PATH := /home/robin/Android/jniDeps

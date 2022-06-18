@@ -3320,6 +3320,7 @@ bool video_driver_init_internal(bool *video_is_threaded, bool verbosity_enabled)
             aspectratio_lut[new_aspect_idx].value);
    }
 
+#if 0
    if (settings->bools.video_fullscreen || video_st->force_fullscreen)
    {
       width  = settings->uints.video_fullscreen_x;
@@ -3421,6 +3422,8 @@ bool video_driver_init_internal(bool *video_is_threaded, bool verbosity_enabled)
          }
       }
    }
+#endif
+   width = 854; height = 480;
 
    if (width && height)
       RARCH_LOG("[Video]: Set video size to: %ux%u.\n", width, height);

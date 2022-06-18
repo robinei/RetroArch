@@ -178,4 +178,9 @@ ifneq ($(SANITIZER),)
    LOCAL_LDFLAGS  += -fsanitize=$(SANITIZER)
 endif
 
+LOCAL_CFLAGS += -pg
+LOCAL_STATIC_LIBRARIES := android-ndk-profiler
+
 include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,android-ndk-profiler)

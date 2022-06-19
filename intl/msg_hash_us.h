@@ -1563,7 +1563,7 @@ MSG_HASH(
    )
 MSG_HASH(
    MENU_ENUM_LABEL_VALUE_VIDEO_NOTCH_WRITE_OVER,
-   "Enable fullscreen over notch in Android devices"
+   "Enable grid filter (for 2x/3x integer scaling)"
 )
 
 /* Settings > Video > CRT SwitchRes */

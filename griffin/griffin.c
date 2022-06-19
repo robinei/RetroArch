@@ -511,6 +511,7 @@ VIDEO DRIVER
 
 #ifdef HAVE_OPENGL
 #include "../gfx/drivers/gl2.c"
+#include "../gfx/drivers/xplay_gfx.c"
 #include "../gfx/drivers_display/gfx_display_gl2.c"
 #endif
 

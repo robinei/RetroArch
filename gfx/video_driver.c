@@ -273,6 +273,7 @@ const video_driver_t *video_drivers[] = {
 #ifdef HAVE_VITA2D
    &video_vita2d,
 #endif
+   &video_xplay,
 #ifdef HAVE_OPENGL
    &video_gl2,
 #endif

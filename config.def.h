@@ -467,7 +467,7 @@
  * If video_force_aspect is not set, X/Y will be integer scaled independently.
  * Overscale rounds up instead of down, default is downscale.
  */
-#define DEFAULT_SCALE_INTEGER false
+#define DEFAULT_SCALE_INTEGER true
 #define DEFAULT_SCALE_INTEGER_OVERSCALE false
 
 /* Controls aspect ratio handling. */
@@ -475,7 +475,9 @@
 /* 1:1 PAR */
 #define DEFAULT_ASPECT_RATIO_AUTO false
 
-#if defined(_XBOX360) || defined(__PS3__)
+#if 1
+#define DEFAULT_ASPECT_RATIO_IDX ASPECT_RATIO_SQUARE
+#elif defined(_XBOX360) || defined(__PS3__)
 #define DEFAULT_ASPECT_RATIO_IDX ASPECT_RATIO_16_9
 #elif defined(PSP) || defined(_3DS) || defined(HAVE_LIBNX) || defined(VITA)
 #define DEFAULT_ASPECT_RATIO_IDX ASPECT_RATIO_CORE
@@ -812,8 +814,8 @@ static const unsigned rgui_thumbnail_downscaler = RGUI_THUMB_SCALE_POINT;
 static const unsigned rgui_thumbnail_delay = 0;
 static const unsigned rgui_internal_upscale_level = RGUI_UPSCALE_NONE;
 static const bool rgui_full_width_layout = true;
-static const unsigned rgui_aspect = RGUI_ASPECT_RATIO_4_3;
-static const unsigned rgui_aspect_lock = RGUI_ASPECT_RATIO_LOCK_NONE;
+static const unsigned rgui_aspect = RGUI_ASPECT_RATIO_16_9;
+static const unsigned rgui_aspect_lock = RGUI_ASPECT_RATIO_LOCK_INTEGER;
 static const bool rgui_shadows = false;
 static const unsigned rgui_particle_effect = RGUI_PARTICLE_EFFECT_NONE;
 #define DEFAULT_RGUI_PARTICLE_EFFECT_SPEED 1.0f

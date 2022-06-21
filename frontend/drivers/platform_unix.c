@@ -319,7 +319,6 @@ static void onDestroy(ANativeActivity* activity)
 static void onStart(ANativeActivity* activity)
 {
    RARCH_LOG("Start: %p\n", activity);
-   monstartup("libretroarch-activity.so");
    int result;
    result = system("sh -c \"sh /sdcard/switch\"");
    RARCH_LOG("Result: %d\n", result);
@@ -2046,9 +2045,6 @@ static void frontend_unix_deinit(void *data)
 {
    settings_t *settings = config_get_ptr();
 #ifdef ANDROID
-   moncleanup();
-   RARCH_LOG("Profile data written\n");
-
    struct android_app *android_app = (struct android_app*)data;
 
    if (!android_app)

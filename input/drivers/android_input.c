@@ -167,6 +167,10 @@ bool (*engine_lookup_name)(char *buf,
       int *vendorId, int *productId, size_t size, int id);
 void (*engine_handle_dpad)(struct android_app *, AInputEvent*, int, int);
 
+static void android_input_poll_input_gingerbread(android_input_t *android, bool vibrate_on_keypress);
+static void android_input_poll_input_default(android_input_t *android, bool vibrate_on_keypress);
+static void (*android_input_poll_input)(android_input_t *android, bool vibrate_on_keypress);
+
 static bool android_input_set_sensor_state(void *data, unsigned port,
       enum retro_sensor_action action, unsigned event_rate);
 
@@ -546,6 +550,11 @@ static void *android_input_init(const char *joypad_driver)
       engine_lookup_name = android_input_lookup_name_prekitkat;
 
    engine_handle_dpad         = engine_handle_dpad_default;
+
+   if (sdk > 10)
+      android_input_poll_input = android_input_poll_input_default;
+   else
+      android_input_poll_input = android_input_poll_input_gingerbread;
 
    if (!android_input_init_handle())
    {
@@ -1035,7 +1044,7 @@ static void handle_hotplug(android_input_t *android,
                strstr(device_model, "Xperia Play") ||
                strstr(device_model, "Play") ||
                strstr(device_model, "SO-01D")
-            ) && (
+            ) || (
                strstr(device_name, "keypad-game-zeus") ||
                strstr(device_name, "keypad-zeus") ||
                strstr(device_name, "Android Gamepad")
@@ -1193,7 +1202,126 @@ static int android_input_get_id(AInputEvent *event)
    return id;
 }
 
-static void android_input_poll_input(android_input_t *android,
+struct TOUCHSTATE {
+   int down;
+   int x;
+   int y;
+};
+
+static void engine_handle_touchpad(struct android_app *android, AInputEvent *event, int port)
+{
+   static struct TOUCHSTATE touchstate[64];
+   int nPointerCount	= AMotionEvent_getPointerCount(event);
+   //RARCH_LOG("[XPLAY-INPUT] MOTION nPointerCount: %d\n", nPointerCount);
+   for(int n = 0 ; n < nPointerCount ; ++n)
+   {
+      int nPointerId	= AMotionEvent_getPointerId(event, n);
+      int nAction		= AMOTION_EVENT_ACTION_MASK & AMotionEvent_getAction(event);
+      int nRawAction	= AMotionEvent_getAction(event);
+      if( nAction == AMOTION_EVENT_ACTION_POINTER_DOWN || nAction == AMOTION_EVENT_ACTION_POINTER_UP )
+      {
+         int nPointerIndex = (AMotionEvent_getAction( event ) & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+         nPointerId = AMotionEvent_getPointerId( event, nPointerIndex );
+      }
+
+      if( nAction == AMOTION_EVENT_ACTION_DOWN || nAction == AMOTION_EVENT_ACTION_POINTER_DOWN )
+      {
+         touchstate[nPointerId].down = 1;
+      }
+      else if( nAction == AMOTION_EVENT_ACTION_UP || nAction == AMOTION_EVENT_ACTION_POINTER_UP || nAction == AMOTION_EVENT_ACTION_CANCEL )
+      {
+         touchstate[nPointerId].down = 0;
+      }
+
+      if (touchstate[nPointerId].down)
+      {
+         int x = touchstate[nPointerId].x = AMotionEvent_getX( event, n );
+         int y = touchstate[nPointerId].y = AMotionEvent_getY( event, n );
+         //RARCH_LOG("[XPLAY-INPUT] MOTION %d (%d,%d)\n", nPointerId, x, y);
+         if (x < 360) {
+            android->analog_state[port][0] = (int16_t)((x / 180.0 - 1.0f) * 32767.0f);
+            android->analog_state[port][1] = (int16_t)((y / 180.0 - 1.0f) * 32767.0f);
+         } else if (x >= 606) {
+            x -= 606;
+            android->analog_state[port][2] = (int16_t)((x / 180.0 - 1.0f) * 32767.0f);
+            android->analog_state[port][3] = (int16_t)((y / 180.0 - 1.0f) * 32767.0f);
+         }
+      }
+      else
+      {
+         if (touchstate[nPointerId].x < 360) {
+            android->analog_state[port][0] = 0.0f;
+            android->analog_state[port][1] = 0.0f;
+         } else if (touchstate[nPointerId].x >= 606) {
+            android->analog_state[port][2] = 0.0f;
+            android->analog_state[port][3] = 0.0f;
+         }
+      }
+   }
+}
+
+static void android_input_poll_input_gingerbread(android_input_t *android,
+      bool vibrate_on_keypress)
+{
+   AInputEvent              *event = NULL;
+   struct android_app *android_app = (struct android_app*)g_android;
+
+   /* Read all pending events. */
+   if (AInputQueue_getEvent(android_app->inputQueue, &event) >= 0)
+   {
+      if (AInputQueue_preDispatchEvent(android_app->inputQueue, event))
+         return;
+      int        source = AInputEvent_getSource(event);
+      int    type_event = AInputEvent_getType(event);
+      int            id = android_input_get_id(event);
+      int          port = android_input_get_id_port(android, id, source);
+      int32_t   handled = 0;
+
+      if (port < 0 && !android_is_keyboard_id(id))
+         port = android_input_recover_port(android, id);
+
+      if (port < 0 && !android_is_keyboard_id(id))
+         handle_hotplug(android, android_app,
+         &port, id, source);
+
+      switch (type_event)
+      {
+         case AINPUT_EVENT_TYPE_MOTION:
+            if ((source & AINPUT_SOURCE_TOUCHPAD))
+               engine_handle_touchpad(android_app, event, port);
+            /* Only handle events from a touchscreen or mouse */
+            else if ((source & (AINPUT_SOURCE_TOUCHSCREEN
+                        | AINPUT_SOURCE_STYLUS | AINPUT_SOURCE_MOUSE)))
+               android_input_poll_event_type_motion(android, event,
+                     port, source, vibrate_on_keypress);
+            else
+               engine_handle_dpad(android_app, event, port, source);
+            handled = 1;
+            break;
+         case AINPUT_EVENT_TYPE_KEY:
+            {
+               int keycode = AKeyEvent_getKeyCode(event);
+
+               if (android_is_keyboard_id(id))
+               {
+                  android_input_poll_event_type_keyboard(
+                        event, keycode, &handled);
+                  android_input_poll_event_type_key(
+                        android_app, event, ANDROID_KEYBOARD_PORT,
+                        keycode, source, type_event, &handled);
+               }
+               else
+                  android_input_poll_event_type_key(android_app,
+                     event, port, keycode, source, type_event, &handled);
+            }
+            break;
+      }
+
+      AInputQueue_finishEvent(android_app->inputQueue, event, handled);
+   }
+}
+
+static void android_input_poll_input_default(android_input_t *android,
       bool vibrate_on_keypress)
 {
    AInputEvent              *event = NULL;
@@ -1222,8 +1350,10 @@ static void android_input_poll_input(android_input_t *android,
          switch (type_event)
          {
             case AINPUT_EVENT_TYPE_MOTION:
+               if ((source & AINPUT_SOURCE_TOUCHPAD))
+                  engine_handle_touchpad(android_app, event, port);
                /* Only handle events from a touchscreen or mouse */
-               if ((source & (AINPUT_SOURCE_TOUCHSCREEN 
+               else if ((source & (AINPUT_SOURCE_TOUCHSCREEN 
                            | AINPUT_SOURCE_STYLUS | AINPUT_SOURCE_MOUSE)))
                   android_input_poll_event_type_motion(android, event,
                         port, source, vibrate_on_keypress);

@@ -104,4 +104,10 @@ public final class RetroActivityFuture extends RetroActivityCommon {
     // If QUITFOCUS parameter was set then completely exit Retroarch when focus is lost
     if (quitfocus) System.exit(0);
   }
+
+  @Override
+  public void onBackPressed()
+  {
+    Log.i("RetroArch", "Intercept onBackKeyPressed");
+  }
 }

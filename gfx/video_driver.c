@@ -269,6 +269,7 @@ const video_driver_t *video_drivers[] = {
 #ifdef HAVE_VITA2D
    &video_vita2d,
 #endif
+   &video_xplay,
 #ifdef HAVE_VULKAN
    &video_vulkan,
 #endif
@@ -3327,6 +3328,7 @@ bool video_driver_init_internal(bool *video_is_threaded, bool verbosity_enabled)
             aspectratio_lut[new_aspect_idx].value);
    }
 
+#if 0
    if (     settings->bools.video_fullscreen 
          || (video_st->flags & VIDEO_FLAG_FORCE_FULLSCREEN))
    {
@@ -3434,6 +3436,8 @@ bool video_driver_init_internal(bool *video_is_threaded, bool verbosity_enabled)
          }
       }
    }
+#endif
+   width = 854; height = 480;
 
    if (width && height)
       RARCH_LOG("[Video]: Set video size to: %ux%u.\n", width, height);

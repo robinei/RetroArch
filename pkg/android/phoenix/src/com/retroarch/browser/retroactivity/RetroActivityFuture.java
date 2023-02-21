@@ -1,6 +1,7 @@
 package com.retroarch.browser.retroactivity;
 
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.content.Intent;
@@ -103,5 +104,21 @@ public final class RetroActivityFuture extends RetroActivityCommon {
 
     // If QUITFOCUS parameter was set then completely exit Retroarch when focus is lost
     if (quitfocus) System.exit(0);
+  }
+
+  @Override
+  public void onBackPressed()
+  {
+    // ignore back, because the gamepad O button generates this
+  }
+
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    boolean handled = super.onKeyDown(keyCode, event);
+    if (keyCode == KeyEvent.KEYCODE_MENU && event.isLongPress()) {
+      // prevent menu long-press from popping up soft keyboard
+      return true;
+    }
+    return handled;
   }
 }

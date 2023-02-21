@@ -68,6 +68,7 @@
 enum video_driver_enum
 {
    VIDEO_GL                 = 0,
+   VIDEO_XPLAY,
    VIDEO_GL1,
    VIDEO_GL_CORE,
    VIDEO_VULKAN,
@@ -389,6 +390,8 @@ static const enum video_driver_enum VIDEO_DEFAULT_DRIVER = VIDEO_GL;
 static const enum video_driver_enum VIDEO_DEFAULT_DRIVER = VIDEO_METAL;
 #endif
 #endif
+#elif defined(ANDROID)
+static const enum video_driver_enum VIDEO_DEFAULT_DRIVER = VIDEO_XPLAY;
 #elif defined(__WINRT__) || defined(WINAPI_FAMILY) && WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP
 /* Lets default to D3D11 in UWP, even when its compiled with ANGLE, since ANGLE is just calling D3D anyway.*/
 static const enum video_driver_enum VIDEO_DEFAULT_DRIVER = VIDEO_D3D11;
@@ -966,6 +969,8 @@ const char *config_get_default_video(void)
    {
       case VIDEO_GL:
          return "gl";
+      case VIDEO_XPLAY:
+         return "xplay";
       case VIDEO_GL1:
          return "gl1";
       case VIDEO_GL_CORE:

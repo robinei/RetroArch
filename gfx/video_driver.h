@@ -1357,6 +1357,7 @@ extern const video_driver_t *video_drivers[];
 extern video_driver_t video_gl3;
 extern video_driver_t video_gl2;
 extern video_driver_t video_gl1;
+extern video_driver_t video_xplay;
 extern video_driver_t video_vulkan;
 extern video_driver_t video_metal;
 extern video_driver_t video_psp1;

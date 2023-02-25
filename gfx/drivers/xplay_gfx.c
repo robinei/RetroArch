@@ -372,18 +372,22 @@ static void xplay_blit_framebuf(xplay_framebuf_texture_t *tex, const void *frame
    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, format, type, source);
 }
 
-static int xplay_get_scale_factor(int width, int height) {
-   int sx = SCREEN_WIDTH / width;
-   int sy = SCREEN_HEIGHT / height;
-   return MIN(sx, sy);
+static void xplay_get_scale_factor(int width, int height, int *sx, int *sy) {
+   int x = SCREEN_WIDTH / width;
+   int y = SCREEN_HEIGHT / height;
+   *sx = *sy = MIN(x, y);
+   if (width / height >= 2 && height * (*sy + 1) <= 480) {
+      *sy += 1;
+   }
 }
 
 static xplay_framebuf_program_t *xplay_get_framebuf_program(xplay_video_t *vid, bool rgba32, int width, int height, bool allow_grid) {
-   int s = xplay_get_scale_factor(width, height);
-   if (!allow_grid) {
+   int sx, sy;
+   xplay_get_scale_factor(width, height, &sx, &sy);
+   if (!allow_grid || sx != sy) {
       return rgba32 ? vid->bgra_program : vid->rgba_program;
    }
-   switch (s) {
+   switch (sx) {
       default: return rgba32 ? vid->bgra_program : vid->rgba_program;
       case 2: return rgba32 ? vid->bgra_program_grid2x : vid->rgba_program_grid2x;
       case 3: return rgba32 ? vid->bgra_program_grid3x : vid->rgba_program_grid3x;
@@ -407,9 +411,10 @@ static void xplay_draw_framebuf(xplay_framebuf_program_t *prog, xplay_framebuf_t
    float dx = 1;
    float dy = 1;
    if (integer_scale) {
-      int s = xplay_get_scale_factor(tex->width, tex->height);
-      int w = s * tex->width;
-      int h = s * tex->height;
+      int sx, sy;
+      xplay_get_scale_factor(tex->width, tex->height, &sx, &sy);
+      int w = sx * tex->width;
+      int h = sy * tex->height;
       dx = (w / 2.f) / (SCREEN_WIDTH / 2.f);
       dy = (h / 2.f) / (SCREEN_HEIGHT / 2.f);
    }

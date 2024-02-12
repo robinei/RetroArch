@@ -825,6 +825,7 @@ static INLINE void android_input_poll_event_type_motion_stylus(
       android_input_t *android, AInputEvent *event,
       int port, int source)
 {
+#if 0
    int getaction     = AMotionEvent_getAction(event);
    int action        = getaction  & AMOTION_EVENT_ACTION_MASK;
    size_t motion_ptr = getaction >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
@@ -898,6 +899,7 @@ static INLINE void android_input_poll_event_type_motion_stylus(
 
       // pointer was already released during AMOTION_EVENT_ACTION_HOVER_MOVE
    }
+#endif
 }
 
 static bool android_is_keyboard_id(int id)
